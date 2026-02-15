@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- FB 預覽設定：這部分決定了連結在 FB 上的長相 -->
+    <title>【實測】1秒算出妳的專屬顯瘦公式</title>
+    <meta property="og:title" content="【穿搭測驗】輸入身高體重，1秒算出妳最適合的顯瘦褲型！">
+    <meta property="og:description" content="全網瘋傳的體態分析工具！已有 5 萬名女性測出專屬比例，告別梨形身材、假胯寬，穿出名模大長腿...">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&h=630&auto=format&fit=crop">
+    <meta property="og:type" content="article">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fff5f5; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px; box-shadow: 0 8px 32px rgba(255, 182, 193, 0.3); }
+        .btn-gradient { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); transition: transform 0.2s; }
+        .btn-gradient:active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- 測驗容器 -->
+    <div id="quiz-container" class="w-full max-w-md glass-card p-8">
+        <!-- 第一步：輸入頁 -->
+        <div id="step-input">
+            <div class="text-center mb-6">
+                <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-sm font-bold">2026 AI 體態分析</span>
+                <h1 class="text-2xl font-bold mt-3 text-gray-800">顯瘦比例計算機</h1>
+                <p class="text-gray-500 mt-2">輸入數據，精準匹配妳的「神褲」</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">身高 (cm)</label>
+                    <input type="number" id="height" placeholder="例如：160" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 outline-none transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">體重 (kg)</label>
+                    <input type="number" id="weight" placeholder="例如：52" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-pink-300 outline-none transition">
+                </div>
+                <button onclick="calculateResult()" class="w-full btn-gradient text-white py-4 rounded-xl font-bold text-lg shadow-lg mt-4">
+                    開始 1 秒分析
+                </button>
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-6">已有 52,104 位用戶完成測驗</p>
+        </div>
+
+        <!-- 第二步：載入中 (模擬 AI 計算) -->
+        <div id="step-loading" class="hidden text-center py-10">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-pink-500 border-t-transparent mb-4"></div>
+            <h2 class="text-xl font-bold text-gray-700">正在匹配最佳顯瘦公式...</h2>
+            <p class="text-gray-400 mt-2 italic">分析數據中...</p>
+        </div>
+
+        <!-- 第三步：結果頁 -->
+        <div id="step-result" class="hidden">
+            <div class="text-center mb-6">
+                <div class="text-pink-500 text-5xl mb-2">✨</div>
+                <h2 class="text-2xl font-bold text-gray-800">測驗結果出爐！</h2>
+                <div id="result-type" class="text-xl font-bold text-pink-600 mt-2 border-b-2 border-pink-200 inline-block pb-1"></div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-xl mb-6 text-gray-600 leading-relaxed">
+                <p id="result-desc"></p>
+                <div class="mt-4 p-3 bg-white rounded-lg border border-pink-100 italic text-sm">
+                    💡 <span id="result-tip"></span>
+                </div>
+            </div>
+
+            <button onclick="redirectToShopee()" class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center space-x-2">
+                <span>查看適合妳的推薦款式</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 在此替換為妳的蝦皮分潤連結
+        const shopeeUrl = https://s.shopee.tw/20q1bWTGOv
+        function calculateResult() {
+            const h = document.getElementById('height').value;
+            const w = document.getElementById('weight').value;
+
+            if (!h || !w) {
+                alert("請填寫完整數據唷！");
+                return;
+            }
+
+            // 切換到載入狀態
+            document.getElementById('step-input').classList.add('hidden');
+            document.getElementById('step-loading').classList.remove('hidden');
+
+            // 模擬計算延遲，增加真實感
+            setTimeout(() => {
+                const bmi = w / ((h/100) * (h/100));
+                let type = "";
+                let desc = "";
+                let tip = "";
+
+                if (bmi < 18.5) {
+                    type = "纖細仙女型";
+                    desc = "妳的體態非常輕盈，但有時會顯得撐不起衣服。最適合妳的是「增加份量感」的褲裝。";
+                    tip = "推薦：工裝寬褲或硬挺布料的 A 字裙，增加視覺寬度。";
+                } else if (bmi >= 18.5 && bmi < 24) {
+                    type = "黃金比例名模型";
+                    desc = "恭喜妳！妳的體態非常勻稱，幾乎所有褲型都能駕馭，但最能展現優勢的是「高腰剪裁」。";
+                    tip = "推薦：直筒牛仔褲或微喇叭褲，拉長腿部比例到極致。";
+                } else if (bmi >= 24 && bmi < 27) {
+                    type = "優雅梨形曲線";
+                    desc = "妳的線條感很美，但可能會有假胯寬或腿部線條困擾。重點在於「修飾髖部」。";
+                    tip = "推薦：深色系廓型寬褲或錐形西裝褲，完美遮蓋胯部缺點。";
+                } else {
+                    type = "豐盈自信型";
+                    desc = "妳擁有迷人的豐盈感。穿搭重點在於「創造垂直線條」與「垂墜感」。";
+                    tip = "推薦：高腰雪紡寬褲或黑色直筒褲，顯瘦效果最明顯。";
+                }
+
+                document.getElementById('result-type').innerText = type;
+                document.getElementById('result-desc').innerText = desc;
+                document.getElementById('result-tip').innerText = tip;
+
+                document.getElementById('step-loading').classList.add('hidden');
+                document.getElementById('step-result').classList.remove('hidden');
+            }, 1200);
+        }
+
+        function redirectToShopee() {
+            window.location.href = shopeeUrl;
+        }
+    </script>
+</body>
+</html>
